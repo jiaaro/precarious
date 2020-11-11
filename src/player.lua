@@ -4,18 +4,22 @@ local lume = require 'lume'
 
 return function(world, objects, x, y)
   local wheel = {}
-  wheel = {}
-  wheel.body = lp.newBody(world, x, y + 30, "dynamic")
-  wheel.shape = lp.newCircleShape( 12)
+  wheel = {
+    body = lp.newBody(world, x, y + 30, "dynamic"),
+    shape = lp.newCircleShape( 12),
+  }
   wheel.fixture = lp.newFixture(wheel.body, wheel.shape, 10)
   wheel.fixture:setRestitution(0.4)
   wheel.fixture:setFriction(10)
+  wheel.fixture:setFilterData(1, 65535, -1)
 
-  local player = {}
-  player.direction = 1
-  player.body = lp.newBody(world, x, y, "dynamic")
-  player.shape = lp.newRectangleShape(0, 0, 25, 40)
+  local player = {
+    zindex = 100,
+    body = lp.newBody(world, x, y, "dynamic"),
+    shape = lp.newRectangleShape(0, 0, 25, 40),
+  }
   player.fixture = lp.newFixture(player.body, player.shape, 2)
+  player.fixture:setFilterData(1, 65535, -1)
 
   player.wheelJoint = lp.newDistanceJoint(
       player.body,
@@ -47,6 +51,10 @@ return function(world, objects, x, y)
   --  8, 5, 3, 2, 1
   player:setDamping(3)
 
+  function player:fellDown()
+    return math.abs(player.body:getAngle()) > math.pi * 0.4
+  end
+
   function player:draw()
     lg.setColor(1,1,1)
 
@@ -68,9 +76,6 @@ return function(world, objects, x, y)
     local angle = player.body:getAngle()
     local tilt = (math.pi+angle) / (2*math.pi)
     local straightness = math.abs(angle) / math.pi
-    if math.abs(angle) > math.pi * .1 then
-      player.direction = lume.sign(angle)
-    end
     lg.push()
     lg.translate(x1, y1)
     lg.rotate(angle)
@@ -98,15 +103,16 @@ return function(world, objects, x, y)
     lg.setColor(1,1,1)
     lg.ellipse('line', 12, 24, 7, 12)
 
-    -- Martini
-    lg.rotate(-(0.3*angle))
-    lg.ellipse('line', 36, 12, 7, 1)
-    lg.line(29, 12, 36, 20)
-    lg.line(43, 12, 36, 20)
-    lg.line(36, 20, 36, 29)
-    lg.ellipse('line', 36, 30, 6, 2)
-
     lg.pop()
+  end
+
+  function player:distanceToDrink()
+    if objects.drink.player_hand_joint then
+      return 99999
+    end
+    local playerx, playery = objects.player.body:getPosition()
+    local drinkx, drinky = objects.drink.body:getPosition()
+    return lume.distance(playerx, playery, drinkx, drinky)
   end
 
   objects.player = player

@@ -5,13 +5,14 @@ require 'level_utils'
 
 return function(world, objects, x, y)
   local customer = {
+    wasBumped = false,
     body = lp.newBody(world, x, y, "dynamic"),
-    shape = lp.newRectangleShape(0, 0, 26, 40),
+    shape = lp.newRectangleShape(0, 3, 26, 40),
   }
   customer.fixture = lp.newFixture(customer.body, customer.shape, 1)
 
   local stool = {
-    body = lp.newBody(world, x-2, y + 30, "dynamic"),
+    body = lp.newBody(world, x, y + 32, "dynamic"),
     shape = lp.newRectangleShape(0, 0, 22, 16),
   }
   stool.fixture = lp.newFixture(stool.body, stool.shape, 1)
@@ -58,6 +59,15 @@ return function(world, objects, x, y)
 
     lg.pop()
     lg.setColor(1,1,1)
+  end
+
+  function customer:update()
+    if self.body:isTouching(objects.hightop.body) or
+        self.body:isTouching(objects.drink.body) or
+        self.body:isTouching(objects.player.body) or
+        self.body:isTouching(objects.wheel.body) then
+      customer.wasBumped = true
+    end
   end
 
   function stool:draw()

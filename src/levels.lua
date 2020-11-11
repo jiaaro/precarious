@@ -1,14 +1,17 @@
 local lp = love.physics
 local lg = love.graphics
 local lume = require 'lume'
-local make_customer = require 'customer'
 require 'level_utils'
+
+local make_customer = require 'customer'
 local make_player = require 'player'
+local make_drink = require 'drink'
 
 function flat(world, objects)
   make_base_level(world, objects)
   make_hightop(world, objects, 300, 180)
   make_customer(world, objects, 375, 180)
+  make_drink(world, objects, 15, 100)
   make_player(world, objects, 75, 160)
 end
 
@@ -33,6 +36,7 @@ function ramp(world, objects)
   platform.fixture:setFriction(10)
   objects.platform = platform
 
+  make_drink(world, objects, 15, 100)
   make_hightop(world, objects, 300, 155)
   make_customer(world, objects, 375, 155)
   make_player(world, objects, 75, 160)
@@ -62,6 +66,7 @@ function stairs(world, objects)
   platform.fixture:setFriction(10)
   objects.platform = platform
 
+  make_drink(world, objects, 15, 100)
   make_hightop(world, objects, 300, 155)
   make_customer(world, objects, 375, 155)
   make_player(world, objects, 75, 160)
