@@ -23,9 +23,8 @@ local lp = love.physics
 
 level_number = 1
 
-local instructions_font
-local has_moved = false
-local level_complete = false
+has_moved = false
+level_complete = false
 
 local draw_stack = {}
 local update_stack = {}
@@ -51,9 +50,10 @@ function love.load()
   dbg.tcpListen('localhost', 9966)
   --dbg.waitIDE()
   lg.setDefaultFilter('nearest', 'nearest')
+  t = 0
   level_complete = false
   has_moved = false
-  instructions_font = love.graphics.newFont(20, 'mono')
+  instructions_font = love.graphics.newFont(16, 'mono')
 
   screen_w, screen_h = love.window.getMode()
   controller = Controller(love.joystick.getJoysticks()[1])
@@ -73,67 +73,11 @@ function love.wheelmoved(x, y)
   mouse_rotation = mouse_rotation + (y / 15.0)
 end
 
-help_text_state = 0
-help_text = ""
-function mk_help_text()
-  local prev_help_text_state = _G.help_text_state
-  local try_again = {"try again", "retry", "give it another go", "get back on the horse", "take another stab", "keep trying", "keep your job", "quit slacking off", "get back to it"}
-  local help_text = ""
-  if not has_moved then
-    help_text_state = "didntmove"
-    help_text = "Turn crank, scroll wheel, or rotate\nright analog stick to " .. lume.randomchoice({
-      "move", "turn wheel", "roll"
-    })
-  elseif level_complete then
-    help_text_state = "levelcomplete"
-    help_text = "Nice Job! B/space to continue"
-  elseif objects.customer.wasBumped then
-    help_text_state = "customerbumped"
-    help_text = "RUDE! b/space to " .. lume.randomchoice(try_again)
-  elseif objects.player:fellDown() then
-    help_text_state = "felldown"
-    help_text = "b/space to " .. lume.randomchoice(try_again)
-  elseif objects.drink.dropped then
-    help_text_state = "droppeddrink"
-    help_text = "b/space to " .. lume.randomchoice(try_again)
-  elseif objects.player:distanceToDrink() <= objects.drink.pickup_distance then
-    help_text_state = "canpickup"
-    help_text = "left/right (or wasd) to " .. lume.randomchoice({
-      "pick up ", "get ", "grab ",
-    }) .. lume.randomchoice({"drink", "order", "martini"})
-  elseif objects.drink:isTouchingTable() then
-    help_text_state = "drinkplaced"
-    help_text = lume.randomchoice({
-      "Stop bothering the customer!",
-      "Give 'em some space!",
-      "Let the bot drink in peace!",
-      "That drink is best enjoyed alone",
-      "The bot didn't come for conversation"
-    })
-  elseif objects.drink.player_hand_joint and objects.drink:distanceToTable() < 100 then
-    help_text_state = "closetotablewithdrink"
-    help_text = "down (or wasd) to " .. lume.randomchoice({
-      "put down drink",
-      "serve drink",
-    })
-  elseif objects.drink.player_hand_joint and objects.drink.handx < 0 then
-    help_text_state = "canswitchhands"
-    help_text = "left/right (or wasd) to " .. lume.randomchoice({
-      "switch hands",
-    })
-  elseif objects.drink.player_hand_joint and objects.drink.handx >= 0 then
-    help_text_state = "customerwaiting"
-    help_text = "The customer is waiting . . ."
-  end
-
-  if help_text_state ~= prev_help_text_state then
-    _G.help_text = help_text
-  end
-end
-
 angle = 0
 adamping = 0
+t = 0
 function love.update(dt)
+  t = t + dt
   controller:update(dt)
   flux.update(dt)
   for i = 1, #update_stack do
@@ -156,13 +100,9 @@ function love.update(dt)
   if math.abs(objects.player.body:getAngle()) > math.pi / 3 then
     objects.drink:drop()
   end
-
-  mk_help_text()
 end
 
 function love.draw()
-  --controller:draw(screen_w, screen_h)
-
   lg.setColor(1,1,1)
 
   for i=1,#draw_stack do
@@ -170,6 +110,4 @@ function love.draw()
   end
 
   lg.setColor(1, 1, 1)
-
-  lg.print(help_text, instructions_font, 10, 6)
 end

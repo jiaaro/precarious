@@ -60,3 +60,28 @@ function make_base_level(world, objects)
   }
   objects.rwall.fixture = lp.newFixture(objects.rwall.body, objects.rwall.shape, 100)
 end
+
+
+function make_help_text(world, objects, mk_text_fn)
+  local help_text = {
+    zindex = 10,
+    state = "",
+    changed_t = 0,
+    text = "",
+  }
+
+  function help_text:update(dt)
+    local state, text = mk_text_fn()
+
+    if state ~= help_text.state or t - help_text.changed_t > 5 then
+      help_text.state = state
+      help_text.changed_t = t
+      help_text.text = text or ""
+    end
+  end
+
+  function help_text:draw()
+    lg.print(help_text.text, instructions_font, 10, 6)
+  end
+  objects.help_text = help_text
+end

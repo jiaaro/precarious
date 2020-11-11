@@ -1,14 +1,10 @@
 
 function love.conf(t)
   t.version = "11.3"
-  t.identity = "lfie"
-  t.window.title = "lfie"
+  t.identity = "Spillt"
+  t.window.title = "Spillt"
 
   -- Playdate
-  --  t.window.width = 400
-  --  t.window.height = 240
-
-  -- Mac
   t.window.width = 400
   t.window.height = 240
   t.window.resizable = false
