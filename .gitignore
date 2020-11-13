@@ -5,3 +5,4 @@
 /lua_modules
 /.luarocks
 /src/.DS_Store
+/makelove-build
