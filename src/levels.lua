@@ -42,6 +42,7 @@ function level2_intro(world, objects)
 end
 
 function flat(world, objects)
+  music:setPlatformingScene()
   set_controls(platforming_controls)
   make_base_level(world, objects)
   make_hightop(world, objects, 300, 180)
@@ -101,6 +102,7 @@ function level3_intro(world, objects)
 end
 
 function ramp(world, objects)
+  music:setPlatformingScene()
   set_controls(platforming_controls)
   make_base_level(world, objects)
   local ramp = {

@@ -8,6 +8,7 @@ local make_drink = require 'drink'
 
 
 return function(world, objects, dialog_gen)
+  music:setDialogScene()
   make_base_level(world, objects)
 
   make_player(world, objects, 120, 160)

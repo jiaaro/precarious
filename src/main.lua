@@ -2,11 +2,10 @@ love.filesystem.setRequirePath(love.filesystem.getRequirePath() .. ";vendor/?.lu
 Controller = require 'controller'
 levels = require 'levels'
 local lume = require 'lume'
-
-
 local flux = require "flux"
 
 require 'inputevents'
+music = require 'sound'
 
 --local https = require 'https'
 --local code, body = https.request("http://127.0.0.1:8000")
@@ -54,6 +53,8 @@ function change_difficulty(direction)
   difficulty = lume.clamp(difficulty + direction, 1, #difficulty_labels)
 end
 
+
+
 function love.load(args)
   if args and args[1] == "-debug" then
     package.cpath = package.cpath .. ';/Users/jiaaro/Library/Application Support/JetBrains/PyCharm2020.1/plugins/intellij-emmylua/classes/debugger/emmy/mac/?.dylib'
@@ -84,6 +85,7 @@ function love.load(args)
 
   lg.setBackgroundColor(0,0,0)
   update_draw_stack()
+  music:play()
 end
 
 local mouse_rotation = 0
@@ -95,6 +97,7 @@ angle = 0
 adamping = 0
 t = 0
 function love.update(dt)
+  music:update(dt)
   if objects.menu then
     return
   end
