@@ -1,3 +1,4 @@
+local lume = require 'lume'
 local lg = love.graphics
 local lp = love.physics
 
@@ -84,4 +85,64 @@ function make_help_text(world, objects, mk_text_fn)
     lg.print(help_text.text, instructions_font, 10, 6)
   end
   objects.help_text = help_text
+end
+
+
+function make_menu_overlay(world, objects, menu_options)
+  set_controls(menu_controls)
+
+  local menu = {
+    zindex = 100000,
+    options = menu_options,
+    selected = 1
+  }
+
+  local h, w = 30, 300
+  function menu:draw()
+    local n_options = #menu.options
+    local menu_w = w + 20
+    local menu_h = (h + 10) * n_options + 10
+    lg.push()
+    lg.translate((screen_w - menu_w) / 2, (screen_h - menu_h) / 2)
+
+    lg.setColor(0, 0, 0)
+    lg.rectangle("fill", 0, 0, menu_w, menu_h)
+
+    lg.setColor(1, 1, 1)
+    lg.rectangle("line", 0, 0, menu_w, menu_h)
+    lg.translate(10, 10)
+    lg.printf({{1, 1, 1}, "M E N U"}, 0, -34, w, "center")
+    lg.printf({{1, 1, 1}, "M E N U"}, 1, -34, w, "center")
+
+    for i = 1, #menu.options do
+      local text = menu.options[i][1]
+      text = text:gsub("{difficulty}", difficulty_labels[difficulty])
+      if menu.selected == i then
+        lg.rectangle("fill", 0, 0, w, h)
+        lg.printf({{0, 0, 0}, text}, 0, 7, w, "center")
+        lg.printf({{0, 0, 0}, text}, 1, 7, w, "center")
+      else
+        lg.rectangle("line", 0, 0, w, h)
+        lg.printf(text, 0, 7, w,"center")
+      end
+      lg.translate(0, h + 10)
+    end
+    lg.pop()
+  end
+
+  function menu:move(direction)
+    menu.selected = lume.clamp(menu.selected + direction, 1, #menu.options)
+  end
+  function menu:select()
+    local callback_fn = menu.options[menu.selected][2]
+    callback_fn()
+  end
+  function menu:dismiss()
+    objects.player:setDamping(difficulty_damping[difficulty])
+    objects.menu = nil
+    update_draw_stack()
+  end
+
+  objects.menu = menu
+  update_draw_stack()
 end

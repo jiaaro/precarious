@@ -1,0 +1,30 @@
+name = "Spilt"
+#default_targets = ["win32", "win64", "macos", "lovejs"]
+default_targets = ["lovejs"]
+build_directory = "../makelove-build"
+
+love_files = [
+    "./*.lua",
+    "./vendor/*.lua",
+]
+
+[windows]
+
+[windows.exe_metadata]
+CompanyName = "James Robert"
+LegalCopyright = "©2020 James Robert"
+FileVersion = "1.0"
+
+[macos.app_metadata]
+CFBundleIdentifier = "com.jiaaro.spilt"
+NSHumanReadableCopyright = "©2020 James Robert"
+CFBundleShortVersionString = "1.0"
+
+[lovejs]
+memory = "200000000"
+
+#[hooks]
+#postbuild = [
+#	# {build_directory} and {version} will be replaced
+#	"cd {build_directory} && ../postbuild.sh",
+#]

@@ -15,6 +15,7 @@ return function(world, objects, x, y)
 
   local player = {
     zindex = 100,
+    can_move = true,
     body = lp.newBody(world, x, y, "dynamic"),
     shape = lp.newRectangleShape(0, 0, 25, 40),
   }
@@ -47,9 +48,7 @@ return function(world, objects, x, y)
     player.body:setAngularDamping(damping)
   end
 
-  -- slow to fast:
-  --  8, 5, 3, 2, 1
-  player:setDamping(3)
+  player:setDamping(difficulty_damping[difficulty])
 
   function player:fellDown()
     return math.abs(player.body:getAngle()) > math.pi * 0.4

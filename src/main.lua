@@ -1,14 +1,16 @@
 love.filesystem.setRequirePath(love.filesystem.getRequirePath() .. ";vendor/?.lua")
---package.cpath = package.cpath .. "./?.so"
 Controller = require 'controller'
 levels = require 'levels'
 local lume = require 'lume'
---local https = require 'https'
+
+
 local flux = require "flux"
 
 require 'inputevents'
 
---local code, body = https.request("https://httpbin.org")
+--local https = require 'https'
+--local code, body = https.request("http://127.0.0.1:8000")
+--print(code)
 --print(body)
 
 --local code, body, headers = https.request("https://gamebeta.futurerewards.co", {method="post", data="cake=1"})
@@ -44,16 +46,32 @@ function update_draw_stack()
   end)
 end
 
-function love.load()
-  package.cpath = package.cpath .. ';/Users/jiaaro/Library/Application Support/JetBrains/PyCharm2020.1/plugins/intellij-emmylua/classes/debugger/emmy/mac/?.dylib'
-  local dbg = require('emmy_core')
-  dbg.tcpListen('localhost', 9966)
-  --dbg.waitIDE()
+local mouse_crank_divisor = 15
+difficulty = 2
+difficulty_labels = {"easy", "medium", "hard"}
+difficulty_damping = {6, 3, 1.5}
+function change_difficulty(direction)
+  difficulty = lume.clamp(difficulty + direction, 1, #difficulty_labels)
+end
+
+function love.load(args)
+  if args and args[1] == "-debug" then
+    package.cpath = package.cpath .. ';/Users/jiaaro/Library/Application Support/JetBrains/PyCharm2020.1/plugins/intellij-emmylua/classes/debugger/emmy/mac/?.dylib'
+    local dbg = require('emmy_core')
+    dbg.tcpListen('localhost', 9966)
+    --dbg.waitIDE()
+  end
+
+  if love.system.getOS() == "Web" then
+    mouse_crank_divisor = 75
+  end
+
   lg.setDefaultFilter('nearest', 'nearest')
   t = 0
   level_complete = false
   has_moved = false
   instructions_font = love.graphics.newFont(16, 'mono')
+  lg.setFont(instructions_font)
 
   screen_w, screen_h = love.window.getMode()
   controller = Controller(love.joystick.getJoysticks()[1])
@@ -70,13 +88,17 @@ end
 
 local mouse_rotation = 0
 function love.wheelmoved(x, y)
-  mouse_rotation = mouse_rotation + (y / 15.0)
+  mouse_rotation = mouse_rotation + (y / mouse_crank_divisor)
 end
 
 angle = 0
 adamping = 0
 t = 0
 function love.update(dt)
+  if objects.menu then
+    return
+  end
+
   t = t + dt
   controller:update(dt)
   flux.update(dt)
@@ -84,18 +106,22 @@ function love.update(dt)
     update_stack[i]:update(dt)
   end
 
-  local rotation = (controller.crankr.rotation_this_frame or 0) + mouse_rotation
-  mouse_rotation = 0
-  if rotation ~= 0 then
-    has_moved = true
+  local rotation = 0
+  if objects.player.can_move then
+    rotation = (controller.crankr.rotation_this_frame or 0) + mouse_rotation
+    mouse_rotation = 0
+    if rotation ~= 0 then
+      has_moved = true
+    end
   end
   objects.wheel.body:setInertia(0)
   objects.wheel.body:setAngularVelocity(rotation/dt)
+
   world:update(dt)
 
   if level_complete == false and objects.drink:isTouchingTable() and objects.player.body:getX() < 80 then
     level_complete = true
-    level_number = math.min(math.max(level_number + 1, 1), #levels)
+    level_up()
   end
   if math.abs(objects.player.body:getAngle()) > math.pi / 3 then
     objects.drink:drop()

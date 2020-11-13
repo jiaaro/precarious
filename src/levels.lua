@@ -1,8 +1,8 @@
 local lp = love.physics
-local lg = love.graphics
 local lume = require 'lume'
 require 'level_utils'
 
+local make_dialog = require 'dialog_levels'
 local make_customer = require 'customer'
 local make_player = require 'player'
 local make_drink = require 'drink'
@@ -13,7 +13,36 @@ local t_move = { "move", "turn wheel", "roll"}
 local t_get = { "pick up ", "get ", "grab "}
 local t_drink = { "drink", "order", "martini"}
 
+function intro(world, objects)
+  set_controls(dialog_controls)
+  make_dialog(world, objects,function()
+    coroutine.yield({player="Excuse me, sir"})
+    coroutine.yield({mrbot="Beat it!"})
+    coroutine.yield({player="I'm here to apply for a job"})
+    coroutine.yield({mrbot="Ha! You think you can serve drinks with one wheel?"})
+    coroutine.yield({player="..."})
+    coroutine.yield({mrbot="Ya know what?"})
+    coroutine.yield({mrbot="That, sounds like a hoot!"})
+    coroutine.yield({mrbot="I'll train you myself – if you can handle it."})
+  end)
+end
+
+function level2_intro(world, objects)
+  set_controls(dialog_controls)
+  make_dialog(world, objects,function()
+    coroutine.yield({mrbot="Wow"})
+    coroutine.yield({mrbot="You moved a drink across an empty room"})
+    coroutine.yield({mrbot="I'm really impressed"})
+    coroutine.yield({mrbot="Except"})
+    coroutine.yield({mrbot="Except...\nthat you probably cheated"})
+    coroutine.yield({player="..."})
+    coroutine.yield({mrbot="From up here I'll be able to see your every move!"})
+    coroutine.yield({mrbot="And you'd better be polite!"})
+  end)
+end
+
 function flat(world, objects)
+  set_controls(platforming_controls)
   make_base_level(world, objects)
   make_hightop(world, objects, 300, 180)
   make_customer(world, objects, 375, 180)
@@ -58,7 +87,21 @@ function flat(world, objects)
   end)
 end
 
+function level3_intro(world, objects)
+  set_controls(dialog_controls)
+  make_dialog(world, objects,function()
+    coroutine.yield({mrbot="Well..."})
+    coroutine.yield({mrbot="Well...\nI suppose you think you're hired then"})
+    coroutine.yield({mrbot="Not even close!"})
+    coroutine.yield({player="! ! !"})
+    coroutine.yield({mrbot="Can you even get upstairs?"})
+    coroutine.yield({player="..."})
+    coroutine.yield({mrbot="Hey, don't give me an attitude!"})
+  end)
+end
+
 function ramp(world, objects)
+  set_controls(platforming_controls)
   make_base_level(world, objects)
   local ramp = {
     draw = filldraw,
@@ -117,6 +160,7 @@ function ramp(world, objects)
 end
 
 function stairs(world, objects)
+  set_controls(platforming_controls)
   make_base_level(world, objects)
   local step
   for i = 1, 4 do
@@ -181,7 +225,10 @@ function stairs(world, objects)
 end
 
 return {
+  intro,
   flat,
+  level2_intro,
   ramp,
+  level3_intro,
   stairs
 }
