@@ -58,6 +58,8 @@ function flat(world, objects)
       return "customerbumped", "RUDE! b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.player:fellDown() then
       return "felldown", "b/space to " .. lume.randomchoice(t_try_again)
+    elseif objects.drink.spilled then
+      return "spilleddrink", "Ah! You spilled it. b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.drink.dropped then
       return "droppeddrink", "b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.player:distanceToDrink() <= objects.drink.pickup_distance then
@@ -137,6 +139,8 @@ function ramp(world, objects)
       return "customerbumped", "RUDE! b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.player:fellDown() then
       return "felldown", "b/space to " .. lume.randomchoice(t_try_again)
+    elseif objects.drink.spilled then
+      return "spilleddrink", "Outragous, you dumped my drink! b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.drink.dropped then
       return "droppeddrink", "b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.drink:isTouchingTable() then
@@ -199,6 +203,8 @@ function stairs(world, objects)
       return "customerbumped", "Watch it you clutz! b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.player:fellDown() then
       return "felldown", "b/space to " .. lume.randomchoice(t_try_again)
+    elseif objects.drink.spilled then
+      return "spilleddrink", "Spilled! That's $50 on the floor. b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.drink.dropped then
       return "droppeddrink", "b/space to " .. lume.randomchoice(t_try_again)
     elseif objects.drink:isTouchingTable() then

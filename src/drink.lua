@@ -44,6 +44,9 @@ return function(world, objects, x, y)
       drink:to_handx(drink.handx)
     elseif not drink.player_hand_joint and drink:isSpilled() then
       drink.dropped = true
+      if drink:isSpilled() then
+        drink.spilled = true
+      end
     end
   end
   function drink:to_hand(handx)

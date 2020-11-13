@@ -48,7 +48,7 @@ end
 local mouse_crank_divisor = 15
 difficulty = 2
 difficulty_labels = {"easy", "medium", "hard"}
-difficulty_damping = {6, 3, 1.5}
+difficulty_damping = {10, 5, 2}
 function change_difficulty(direction)
   difficulty = lume.clamp(difficulty + direction, 1, #difficulty_labels)
 end
@@ -85,7 +85,9 @@ function love.load(args)
 
   lg.setBackgroundColor(0,0,0)
   update_draw_stack()
-  music:play()
+  if love.system.getOS() ~= "Web" then
+    music:play()
+  end
 end
 
 local mouse_rotation = 0
